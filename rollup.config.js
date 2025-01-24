@@ -19,6 +19,20 @@ export default [{
     ]
   },
   {
+    input: 'tests/app/main.js',
+    output: {
+      file: 'tests/app/dist/index.js',
+      format: 'es',
+      name:"karel"
+    },
+    
+    plugins: [
+        commonjs(),
+        ts,
+        nodeResolve()
+    ]
+  },
+  {
     input: 'src/index.ts',
     output: {
       file: 'dist/index.js',
