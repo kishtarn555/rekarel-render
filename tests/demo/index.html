@@ -12,7 +12,22 @@
         </canvas>
     </div>
     <div>
-        <textarea name="a" id="world" cols="80" rows="10"></textarea>
+        <textarea name="a" id="world" cols="80" rows="10">
+            <ejecucion version="1.1">
+                <condiciones instruccionesMaximasAEjecutar="10000000" longitudStack="65000" memoriaStack="65000" llamadaMaxima="5"/>
+                <mundos>
+                    <mundo nombre="mundo_0" ancho="4" alto="6">
+                        <monton x="2" y="5" zumbadores="2"/>
+                        <monton x="1" y="6" zumbadores="1"/>
+                        <monton x="3" y="6" zumbadores="3"/>
+                    </mundo>
+                </mundos>
+                <programas tipoEjecucion="CONTINUA" intruccionesCambioContexto="1" milisegundosParaPasoAutomatico="0">
+                    <programa nombre="p1" ruta="{$2$}" mundoDeEjecucion="mundo_0" xKarel="3" yKarel="3" direccionKarel="NORTE" mochilaKarel="0"/>
+                </programas>
+            </ejecucion>
+            
+        </textarea>
     </div>
     <div>
         <button type="button" id="draw">Draw!</button>
