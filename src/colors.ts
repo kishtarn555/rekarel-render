@@ -34,7 +34,7 @@ export const DefaultRendererColors: RendererColors = {
     gutterSelectionColor: "#000000",
 }
 
-export function isWRStyle(obj: any): obj is RendererColors {
+export function isRenderColors(obj: any): obj is RendererColors {
     if (!obj || typeof obj !== 'object') return false;
 
     const requiredKeys = [
