@@ -9,7 +9,6 @@ class WorldRenderer {
     margin: number;
     style: RendererColors;
     scale: number;
-    scroller: HTMLElement;
     private origin: CellPair;
     private world: World;
     private mode: "normal" | "error";
