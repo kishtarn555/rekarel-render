@@ -1,8 +1,15 @@
-import { KarelNumbers, World } from "@rekarel/core";
+import { KarelNumbers, World, WorldOutput } from "@rekarel/core";
 import { CellPair, CellRegion } from "./data";
 import { RendererColors } from "./colors";
 
 type RenderMode = "normal" | "error";
+type RenderCompareMode = "no_compare" | "show_actual" | "show_expected";
+interface DrawOptions {
+    selection?: CellRegion,
+    output?: WorldOutput
+    _compareMode?: RenderCompareMode;
+    _worldOutput?: WorldOutput;
+}
 class WorldRenderer {
     GutterSize: number;
     canvasContext: CanvasRenderingContext2D;
@@ -10,9 +17,12 @@ class WorldRenderer {
     margin: number;
     style: RendererColors;
     scale: number;
+    
     private _origin: CellPair;
     private _world: World;
+    
     private _mode: RenderMode;
+    private _drawOptions: DrawOptions
     private _snapped: boolean
 
     constructor(canvasContext: CanvasRenderingContext2D, style: RendererColors, scale: number) {
@@ -79,7 +89,7 @@ class WorldRenderer {
         return this._world.w;
     }
 
-    private DrawVerticalGutter(selection: CellRegion | null = null): void {
+    private DrawVerticalGutter(selection?: CellRegion): void {
         this.ResetTransform();
         let h = this.GetHeight();
         let w = this.GetWidth();
@@ -184,11 +194,11 @@ class WorldRenderer {
         }
     }
 
-    DrawGutters(selection: CellRegion | null = null): void {
+    DrawGutters(selection?: CellRegion): void {
         let h = this.GetHeight();
         let w = this.GetWidth();
-        this.DrawVerticalGutter(selection);
-        this.DrawHorizontalGutter(selection);
+        this.DrawVerticalGutter(selection ?? this._drawOptions?.selection);
+        this.DrawHorizontalGutter(selection ?? this._drawOptions?.selection);
         this.ResetTransform();
         this.canvasContext.fillStyle = this.style.gridBorderColor;
         this.canvasContext.fillRect(0, h - this.GutterSize, this.GutterSize, this.GutterSize);
@@ -437,8 +447,9 @@ class WorldRenderer {
         }
     }
 
-    Draw(world: World, selection: CellRegion | null = null) {
+    Draw(world: World, options?:DrawOptions) {
         this._world = world;
+        this._drawOptions = options;
         this.ResetTransform();
         let h = this.GetHeight();
         let w = this.GetWidth();
@@ -453,7 +464,7 @@ class WorldRenderer {
         )
         this.DrawWalls();
         this.DrawBeepers();
-        this.DrawGutters(selection);
+        this.DrawGutters();
         this.ResetTransform();
     }
 
