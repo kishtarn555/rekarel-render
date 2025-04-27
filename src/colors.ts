@@ -13,7 +13,19 @@ export type RendererColors = {
     wallColor: string,
     waffleColor: string,
     gutterSelectionColor: string,
-    gutterSelectionBackgroundColor: string
+    gutterSelectionBackgroundColor: string,
+    /**
+     * Color used on matching elements with expected output
+     */
+    coincidence: string,
+    /**
+     * Color used on elements that don't match the expected output
+     */
+    difference: string,
+    /**
+     * Color used on elements that aren't tracked on the expected output
+     */
+    irrelevant: string,
 }
 
 export const DefaultRendererColors: RendererColors = {
@@ -32,6 +44,9 @@ export const DefaultRendererColors: RendererColors = {
     waffleColor: "#0d6dfd",
     gutterSelectionBackgroundColor: "#86afd5",
     gutterSelectionColor: "#000000",
+    coincidence: "#43A3F7",
+    difference : "#FF5272",
+    irrelevant: "#ABB5AC"
 }
 
 export function isRenderColors(obj: any): obj is RendererColors {
@@ -49,7 +64,9 @@ export function isRenderColors(obj: any): obj is RendererColors {
         'gutterColor',
         'beeperBackgroundColor',
         'beeperColor',
-        'wallColor'
+        'wallColor',
+        'coincidence',
+        'difference'
     ];
 
     for (const key of requiredKeys) {

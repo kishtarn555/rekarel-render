@@ -19,9 +19,9 @@ export default [{
     ]
   },
   {
-    input: 'tests/app/main.js',
+    input: 'tests/demo/main.js',
     output: {
-      file: 'tests/app/dist/index.js',
+      file: 'tests/demo/dist/index.js',
       format: 'es',
       name:"karel"
     },
