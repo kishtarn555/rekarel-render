@@ -238,7 +238,54 @@ class WorldRenderer {
         this.canvasContext.fillRect(0, 0, w, h);
     }
 
-    private DrawKarel(r: number, c: number, orientation: "north" | "east" | "south" | "west" = "north"): void {
+    private ProcessKarel() {
+        let i = this._world.i;
+        let j = this._world.j;
+        let color = this.style.karelColor;
+        let orientiation = this._world.orientation;
+        const comparing = this._drawOptions?._compareMode != null && this._drawOptions?._compareMode !== "no_compare";
+        if (comparing) {
+            if (
+                this._drawOptions._compareTarget?.i != null ||
+                this._drawOptions._compareTarget?.j != null ||
+                this._drawOptions._compareTarget?.orientation != null 
+            ) {
+                color = this.style.coincidence;
+            } else {
+                color = this.style.irrelevant;
+            }
+            if (this._drawOptions._compareTarget?.i != null && this._drawOptions._compareTarget?.i != i) {
+                color = this.style.difference;
+            }
+            if (this._drawOptions._compareTarget?.j != null && this._drawOptions._compareTarget?.j != j) {
+                color = this.style.difference;
+            }
+            if (this._drawOptions._compareTarget?.orientation != null && this._drawOptions._compareTarget?.orientation != orientiation) {
+                color = this.style.difference;
+            }
+        }
+
+        if (this._drawOptions?._compareMode === "show_expected") {
+            if (this._drawOptions._compareTarget?.i != null) {
+                i = this._drawOptions._compareTarget.i;
+            }
+            if (this._drawOptions._compareTarget?.j != null) {
+                j = this._drawOptions._compareTarget.j;
+            }
+            if (this._drawOptions._compareTarget?.orientation != null) {
+                orientiation = this._drawOptions._compareTarget.orientation;
+            }
+        }
+
+        this.DrawKarel(
+            i,
+            j,
+            this.GetOrientation(orientiation),
+            color
+        )
+    }
+
+    private DrawKarel(r: number, c: number, orientation: "north" | "east" | "south" | "west" = "north", color: string): void {
         this.ResetTransform();
         if (r - this._origin.r < -1 || r - this._origin.r >= this.GetRowCount()) {
             // Cull Karel it's outside view by y coord
@@ -254,7 +301,7 @@ class WorldRenderer {
         let y = h - (this.GutterSize + this.CellSize * (r - this._origin.r) + this.CellSize / 2);
 
         this.canvasContext.translate(x - 0.5, y + 0.5);
-        this.canvasContext.fillStyle = this.style.karelColor;
+        this.canvasContext.fillStyle = color;
         this.canvasContext.beginPath();
         switch (orientation) {
             case "east":
@@ -421,6 +468,7 @@ class WorldRenderer {
                 if (this._drawOptions?._compareMode === "show_actual") {
                     buzzers = this._world.buzzers(r, c);
                     otherBuzzers = this._drawOptions._compareTarget?.buzzers(r, c);
+                    bgColor = this.style.coincidence;
                     if (otherBuzzers == null) {
                         bgColor = this.style.irrelevant;
                     }
@@ -430,6 +478,7 @@ class WorldRenderer {
                 } else if (this._drawOptions?._compareMode === "show_expected") {
                     buzzers = this._drawOptions._compareTarget?.buzzers(r, c);
                     otherBuzzers = this._world.buzzers(r, c);
+                    bgColor = this.style.coincidence;
                     if (buzzers == null) {
                         bgColor = this.style.irrelevant;                    
                     }
@@ -480,11 +529,8 @@ class WorldRenderer {
         this.DrawBackground();
         this.DrawDumpCells();
         this.DrawGrid();
-        this.DrawKarel(
-            world.i,
-            world.j,
-            this.GetOrientation(world.orientation)
-        )
+        this.ProcessKarel();
+        
         this.DrawWalls();
         this.DrawBeepers();
         this.DrawGutters();
