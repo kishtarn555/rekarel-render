@@ -6,9 +6,8 @@ type RenderMode = "normal" | "error";
 type RenderCompareMode = "no_compare" | "show_actual" | "show_expected";
 interface DrawOptions {
     selection?: CellRegion,
-    output?: WorldOutput
     _compareMode?: RenderCompareMode;
-    _worldOutput?: WorldOutput;
+    _compareTarget?: WorldOutput;
 }
 class WorldRenderer {
     GutterSize: number;
@@ -416,13 +415,37 @@ class WorldRenderer {
                     break;
                 let r = i + Math.floor(this._origin.r);
                 let c = j + Math.floor(this._origin.c);
-                let buzzers: number = this._world.buzzers(r, c);
-                if (buzzers !== 0) {
+                let buzzers: number | null = null;
+                let otherBuzzers: number | null = null;
+                let bgColor:string = this.style.beeperBackgroundColor;
+                if (this._drawOptions?._compareMode === "show_actual") {
+                    buzzers = this._world.buzzers(r, c);
+                    otherBuzzers = this._drawOptions._compareTarget?.buzzers(r, c);
+                    if (otherBuzzers == null) {
+                        bgColor = this.style.irrelevant;
+                    }
+                    else if (otherBuzzers !== buzzers) {
+                        bgColor = this.style.difference;
+                    }
+                } else if (this._drawOptions?._compareMode === "show_expected") {
+                    buzzers = this._drawOptions._compareTarget?.buzzers(r, c);
+                    otherBuzzers = this._world.buzzers(r, c);
+                    if (buzzers == null) {
+                        bgColor = this.style.irrelevant;                    
+                    }
+                    else if (otherBuzzers !== buzzers) {
+                        bgColor = this.style.difference;
+                    }
+                } else {
+                    buzzers = this._world.buzzers(r, c);
+                }                
+                
+                if ((buzzers != null && buzzers !== 0) || (otherBuzzers != null && otherBuzzers !== 0)) {
                     this.DrawBeeperSquare({
                         r: i,
                         c: j,
-                        amount: buzzers,
-                        background: this.style.beeperBackgroundColor,
+                        amount: buzzers ?? otherBuzzers ?? 0,
+                        background: bgColor,
                         color: this.style.beeperColor
                     });
                 }
@@ -447,7 +470,7 @@ class WorldRenderer {
         }
     }
 
-    Draw(world: World, options?:DrawOptions) {
+    Draw(world: World & WorldOutput, options?:DrawOptions) {
         this._world = world;
         this._drawOptions = options;
         this.ResetTransform();

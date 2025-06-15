@@ -11,7 +11,16 @@
         <canvas id="canvas" width="800" height="600" style="background-color: purple;" >
         </canvas>
     </div>
+    <div style="display: flex; align-items: center; margin: 16px 0;">
+        <label for="compareMode" style="margin-right: 8px;">Modo de comparación:</label>
+        <select id="compareMode">
+            <option value="no_compare">no_compare</option>
+            <option value="show_actual">show_actual</option>
+            <option value="show_expected">show_expected</option>
+        </select>
+    </div>
     <div>
+        <h2>Entrada</h2>
         <textarea name="a" id="world" cols="80" rows="10">
             <ejecucion version="1.1">
                 <condiciones instruccionesMaximasAEjecutar="10000000" longitudStack="65000" memoriaStack="65000" llamadaMaxima="5"/>
@@ -27,6 +36,25 @@
                 </programas>
             </ejecucion>
             
+        </textarea>
+    </div>
+    <div>
+        <h2>Salida a comparar</h2>
+        <textarea name="a" id="worldoutput" cols="80" rows="10">
+            <resultados>
+                <mundos>
+                    <mundo nombre="mundo_0">
+                        <linea fila="6" compresionDeCeros="true">(3) 1 </linea>
+                        <linea fila="5" compresionDeCeros="true">(2) 2 </linea>
+                        <linea fila="3" compresionDeCeros="true">(4) 5 </linea>
+                    </mundo>
+                </mundos>
+                <programas>
+                    <programa nombre="p1" resultadoEjecucion="FIN PROGRAMA">
+                        <karel x="1" y="2"/>
+                    </programa>
+                </programas>
+            </resultados>            
         </textarea>
     </div>
     <div>
