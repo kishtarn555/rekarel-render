@@ -378,13 +378,16 @@ class WorldRenderer {
     }
 
     private DrawBeeperSquare(
-        { r, c, amount: amount, background, color }:
-            { r: number; c: number; amount: number; background: string; color: string; }
+        { r, c, amount: amount, parenthesis, background,  color }:
+            { r: number; c: number; amount: number; parenthesis?:boolean; background: string; color: string; }
     ) {
         let h = this.GetHeight();
         let x = c * this.CellSize + this.GutterSize;
         let y = h - ((r + 1) * this.CellSize + this.GutterSize);
         let text = KarelNumbers.isInfinite(amount) ? '∞' : String(amount);
+        if (parenthesis) {
+            text = `(${text})`;
+        }
         this.SetBeeperFont(KarelNumbers.isInfinite(amount) ? 1.5 : 1);
         let measure = this.canvasContext.measureText(text);
         let textH = measure.actualBoundingBoxAscent + 4;
@@ -465,6 +468,7 @@ class WorldRenderer {
                 let buzzers: number | null = null;
                 let otherBuzzers: number | null = null;
                 let bgColor:string = this.style.beeperBackgroundColor;
+                let diff = false;
                 if (this._drawOptions?._compareMode === "show_actual") {
                     buzzers = this._world.buzzers(r, c);
                     otherBuzzers = this._drawOptions._compareTarget?.buzzers(r, c);
@@ -474,6 +478,7 @@ class WorldRenderer {
                     }
                     else if (otherBuzzers !== buzzers) {
                         bgColor = this.style.difference;
+                        diff = true;
                     }
                 } else if (this._drawOptions?._compareMode === "show_expected") {
                     buzzers = this._drawOptions._compareTarget?.buzzers(r, c);
@@ -484,6 +489,7 @@ class WorldRenderer {
                     }
                     else if (otherBuzzers !== buzzers) {
                         bgColor = this.style.difference;
+                        diff = true;
                     }
                 } else {
                     buzzers = this._world.buzzers(r, c);
@@ -494,6 +500,7 @@ class WorldRenderer {
                         r: i,
                         c: j,
                         amount: buzzers ?? otherBuzzers ?? 0,
+                        parenthesis: diff,
                         background: bgColor,
                         color: this.style.beeperColor
                     });
