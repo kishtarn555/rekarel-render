@@ -13,7 +13,9 @@ export type RendererColors = {
     wallColor: string,
     waffleColor: string,
     gutterSelectionColor: string,
-    gutterSelectionBackgroundColor: string
+    gutterSelectionBackgroundColor: string,
+    cellColorStroke: number
+
 }
 
 export const DefaultRendererColors: RendererColors = {
@@ -32,25 +34,13 @@ export const DefaultRendererColors: RendererColors = {
     waffleColor: "#0d6dfd",
     gutterSelectionBackgroundColor: "#86afd5",
     gutterSelectionColor: "#000000",
+    cellColorStroke: 3,
 }
 
 export function isRenderColors(obj: any): obj is RendererColors {
     if (!obj || typeof obj !== 'object') return false;
 
-    const requiredKeys = [
-        'disabled',
-        'exportCellBackground',
-        'karelColor',
-        'gridBackgroundColor',
-        'errorGridBackgroundColor',
-        'gridBorderColor',
-        'errorGridBorderColor',
-        'gutterBackgroundColor',
-        'gutterColor',
-        'beeperBackgroundColor',
-        'beeperColor',
-        'wallColor'
-    ];
+    const requiredKeys = Object.keys(DefaultRendererColors);
 
     for (const key of requiredKeys) {
         if (!(key in obj) || typeof obj[key] !== 'string') {
