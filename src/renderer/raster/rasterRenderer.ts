@@ -3,11 +3,13 @@ import { BaseRenderer, RendererFunction } from "../baseRenderer";
 import { DrawOptions } from "../drawOptions";
 import { WorldRenderer } from "../renderer";
 import { DEFAULT_STYLE } from "../style";
+import { CellSelection } from "../../CellSelection";
 
 
 interface RasterRenderOptions extends DrawOptions {
     /** Area of the canvas were the world is drawn. Useful for rendering multiple worlds onto the same target */
     drawArea: { x: number, y: number, width: number, height: number };
+    selection?: CellSelection
 
     
 }
@@ -272,10 +274,6 @@ const DrawBeeperSquare = (lr: number, lc: number, amount: number, target:CanvasR
 
 const DrawBeepers: RendererFunction<RasterRenderOptions, CanvasRenderingContext2D> = (target, world, options, previousOptions) => {
 
-
-
-
-    
     for (let i =0; i < GetRowCount(options); i++) {
         if (i+options.originOffset.r > world.h) 
             break;
@@ -292,6 +290,120 @@ const DrawBeepers: RendererFunction<RasterRenderOptions, CanvasRenderingContext2
     }
 };
 
+const DrawTextVerticallyAlign = (text:string, x: number, y:number, maxWidth: number, target:CanvasRenderingContext2D)=> {
+    target.textAlign = "center";
+    target.textBaseline = "alphabetic";
+    let measure = target.measureText(text);
+    let hs = measure.actualBoundingBoxAscent - measure.actualBoundingBoxDescent;        
+    target.fillText(text, x, y + hs / 2, maxWidth);
+}
+
+
+const DrawVerticalGutter : RendererFunction<RasterRenderOptions, CanvasRenderingContext2D> = (target, world, options, previousOptions) => {
+    const style = options.style;
+    const selection: any = null;
+    let h = options.drawArea.height / options.scale;
+    let w =  options.drawArea.width / options.scale;
+    
+    target.fillStyle = style.gutterBackgroundColor;
+    target.fillRect(0, 0, style.rowGutterSize, h - style.columnGutterSize);
+    let rows = GetRowCount(options, "floor");
+    target.strokeStyle = style.gridBorderColor;
+    let r1=-1,r2=-1;
+    if (selection != null) {
+        // r1 = Math.min(selection.r, selection.r + (selection.rows-1)*selection.dr)-this._origin.r;
+        // r2 = Math.max(selection.r, selection.r + (selection.rows-1)*selection.dr)-this._origin.r;
+        
+        // let sr1 = h-(style.columnGutterSize+ (r1) *style.cellHeight);
+        // let sr2 = h-(style.columnGutterSize+ (r2+1) *style.cellHeight);
+        // target.fillStyle = style.gutterSelectionBackgroundColor;
+        
+        // target.fillRect(0, sr2, style.rowGutterSize-1, sr1-sr2);
+        
+        
+    }
+    
+    target.beginPath();
+    for (let i =0; i < rows; i++) {
+        target.moveTo(0, h-(style.columnGutterSize+ (i+1) *style.cellHeight)+0.5);
+        target.lineTo(style.rowGutterSize, h-(style.columnGutterSize+ (i+1) *style.cellHeight)+0.5);
+    }
+    target.stroke();
+    
+    target.fillStyle= style.gutterColor;
+    target.font = `${Math.min(style.cellHeight, style.rowGutterSize) }px monospace`;
+    target.textAlign = "center";
+    target.textBaseline = "middle";
+    for (let i =0; i < rows; i++) {
+        let r = i + Math.floor(options.originOffset.r);
+        // target.measureText()
+        if (i < r1 || i > r2) {
+            target.fillStyle= style.gutterColor;
+        } else {
+            // target.fillStyle= style.gutterSelectionColor;
+        }
+        if (r <= world.h)
+            DrawTextVerticallyAlign(
+                `${r}`, 
+                style.rowGutterSize / 2, 
+                h-(style.columnGutterSize+ (i+0.5) *style.cellHeight), 
+                style.rowGutterSize,
+                target
+            );
+        }
+};
+
+const DrawHorizontalGutter : RendererFunction<RasterRenderOptions, CanvasRenderingContext2D> = (target, world, options, previousOptions) => {
+    const style = options.style;
+    const selection: any = null;
+    let h = options.drawArea.height/options.scale;
+    let w = options.drawArea.width/options.scale;
+
+    target.fillStyle = style.gutterBackgroundColor;
+    target.fillRect(style.rowGutterSize, h - style.columnGutterSize, w - style.rowGutterSize, style.columnGutterSize);
+    let cols = GetColCount(options, "floor");
+    target.strokeStyle = style.gridBorderColor;
+    let c1 = -1, c2=-1;        
+    if (selection != null) {
+        // c1 = Math.min(selection.c, selection.c + (selection.cols-1)*selection.dc)-this._origin.c;
+        // c2 = Math.max(selection.c, selection.c + (selection.cols-1)*selection.dc)-this._origin.c;
+        // let sc1 = (this.GutterSize+ (c1) *this.CellSize);
+        // let sc2 = (this.GutterSize+ (c2+1) *this.CellSize);
+        // target.fillStyle = this.style.gutterSelectionBackgroundColor;
+        
+        // target.fillRect(sc1, h - this.GutterSize+1, sc2-sc1, this.GutterSize);
+        
+
+    }
+    // this.TranslateOffset(false, true);
+    target.beginPath();
+    for (let i =0; i < cols; i++) {
+        target.moveTo(style.rowGutterSize+(i+1)*style.cellWidth-0.5, h);            
+        target.lineTo(style.rowGutterSize+(i+1)*style.cellWidth-0.5, h-style.columnGutterSize);
+    }
+    target.stroke();
+    target.fillStyle= style.gutterColor;
+    target.font = `${Math.min(style.cellWidth, style.columnGutterSize)}px monospace`;
+    target.textAlign = "center";
+    target.textBaseline = "middle";
+    for (let i =0; i < cols; i++) {
+        if (i < c1 || i > c2) {
+            target.fillStyle= style.gutterColor;
+        } else {
+            // target.fillStyle= style.gutterSelectionColor;
+        }
+        const c = i+Math.floor(options.originOffset.c); 
+        // this.canvasContext.measureText()            
+        if (c <= world.w)
+            DrawTextVerticallyAlign(
+                `${c}`, 
+                style.rowGutterSize + (i + 0.5) * style.cellWidth,
+                h-style.columnGutterSize/2, 
+                style.cellWidth,
+                target
+            );
+    }
+}
 
 
 const baseOptions = (target: CanvasRenderingContext2D, world: World) : RasterRenderOptions => {
@@ -321,6 +433,8 @@ export class RasterRenderer extends BaseRenderer<RasterRenderOptions, CanvasRend
             DrawKarel,
             DrawWalls,
             DrawBeepers,
+            DrawVerticalGutter,
+            DrawHorizontalGutter,
         ];
         this.preLayer = (_, target) => {
             target.save();
