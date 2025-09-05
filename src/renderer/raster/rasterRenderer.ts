@@ -1,4 +1,4 @@
-import { World } from "@rekarel/core"
+import { KarelNumbers, World } from "@rekarel/core"
 import { BaseRenderer, RendererFunction } from "../baseRenderer";
 import { DrawOptions } from "../drawOptions";
 import { WorldRenderer } from "../renderer";
@@ -216,6 +216,83 @@ const DrawWalls: RendererFunction<RasterRenderOptions, CanvasRenderingContext2D>
 }
 
 
+const DrawBeeperSquare = (lr: number, lc: number, amount: number, target:CanvasRenderingContext2D, options:RasterRenderOptions) => {
+    const style = options.style;    
+    const text = KarelNumbers.isInfinite(amount) ? '∞' : `${amount}`;
+    target.save();
+    // prepare canvas
+    (()=>{
+        target.textAlign = "center";
+        target.textBaseline = "alphabetic";
+        let scale = 0.8;
+        if (KarelNumbers.isInfinite(amount)) {
+            scale = 0.8;
+        } else if (text.length == 1) {
+            scale = 0.68;             
+        } else  if (text.length == 2) {
+            scale = 0.62;
+        } else {
+            scale = 1.8/text.length;
+        }
+        target.font = `${style.cellWidth* scale }px monospace`;
+
+        const h = options.drawArea.height / options.scale;
+        const x = style.rowGutterSize + style.cellWidth * (lc + 0.5);
+        const y = h - (style.columnGutterSize + style.cellHeight * (lr + 0.5));
+        target.translate(x, y);
+
+    })();
+    //Draw beeperbox
+    (()=> {
+        let measure = target.measureText(text);
+        let textH = measure.actualBoundingBoxAscent + 4;
+        let textW = Math.min(measure.width+4, style.cellWidth - 2);
+        target.fillStyle = style.beeperBackgroundColor;
+        target.fillRect(
+            -(textW/2), 
+            -(textH/2),             
+            textW, 
+            textH
+        ); 
+    })();
+    
+    //Draw Text
+    (()=> {        
+        target.fillStyle = style.beeperColor;
+        let measure = target.measureText(text);
+        let hs = measure.actualBoundingBoxAscent - measure.actualBoundingBoxDescent;       
+        target.fillText(text, 0, hs / 2);
+    })();  
+    
+    target.restore();
+
+}
+
+
+
+const DrawBeepers: RendererFunction<RasterRenderOptions, CanvasRenderingContext2D> = (target, world, options, previousOptions) => {
+
+
+
+
+    
+    for (let i =0; i < GetRowCount(options); i++) {
+        if (i+options.originOffset.r > world.h) 
+            break;
+        for (let j =0; j < GetColCount(options); j++) {
+            if (j+options.originOffset.c > world.w) 
+                break;
+            let r = i + Math.floor(options.originOffset.r);
+            let c =  j + Math.floor(options.originOffset.c);
+            let buzzers: number = world.buzzers(r, c);
+            if (buzzers!==0) {
+                DrawBeeperSquare(i, j, buzzers, target, options);
+            }
+        }
+    }
+};
+
+
 
 const baseOptions = (target: CanvasRenderingContext2D, world: World) : RasterRenderOptions => {
     return {
@@ -242,7 +319,8 @@ export class RasterRenderer extends BaseRenderer<RasterRenderOptions, CanvasRend
             colorDumpCells,
             DrawGrid,
             DrawKarel,
-            DrawWalls
+            DrawWalls,
+            DrawBeepers,
         ];
         this.preLayer = (_, target) => {
             target.save();
