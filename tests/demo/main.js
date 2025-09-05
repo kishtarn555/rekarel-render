@@ -1,4 +1,4 @@
-import { WorldRenderer, DefaultRendererColors } from "../../dist/index.js";
+import { RasterRenderer} from "../../dist/index.js";
 import { World } from "@rekarel/core";
 
 
@@ -7,10 +7,12 @@ const input = document.getElementById("world")
 const drawBtn = document.getElementById("draw");
 let ctx = canvas.getContext("2d");
 
-let renderer = new WorldRenderer(
+let renderer = new RasterRenderer(
     ctx,
-    DefaultRendererColors,
-    1
+    {
+        drawArea: {x:200, y:100, width:415, height:415},
+        scale: 1.8,
+    }
 )
 
 

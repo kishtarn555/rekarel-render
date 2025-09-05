@@ -1,8 +1,3 @@
-import { RendererColors, DefaultRendererColors } from "./style/colors";
-import { WorldRenderer } from "./renderer/renderer";
+export {RasterRenderer} from "./renderer/raster";
+export {DEFAULT_STYLE, RendererStyle} from "./renderer";
 
-export { 
-    DefaultRendererColors,
-    RendererColors,
-    WorldRenderer
- };

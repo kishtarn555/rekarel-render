@@ -1,0 +1,6 @@
+{
+    "liveServer.settings.root": "./tests/demo",
+    "liveServer.settings.ignoreFiles": [
+        "**/main.js"
+    ]
+}

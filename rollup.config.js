@@ -19,20 +19,6 @@ export default [{
     ]
   },
   {
-    input: 'tests/demo/main.js',
-    output: {
-      file: 'tests/demo/dist/index.js',
-      format: 'es',
-      name:"karel"
-    },
-    
-    plugins: [
-        commonjs(),
-        ts,
-        nodeResolve()
-    ]
-  },
-  {
     input: 'src/index.ts',
     output: {
       file: 'dist/index.js',
@@ -50,6 +36,21 @@ export default [{
     input: './dist/built/index.d.ts',
     output: [{ file: 'dist/index.d.ts', format: 'cjs' }],
     plugins: [dts()],
-  }
+  },
+  
+  {
+    input: 'tests/demo/main.js',
+    output: {
+      file: 'tests/demo/dist/index.js',
+      format: 'es',
+      name:"karel"
+    },
+    
+    plugins: [
+        commonjs(),
+        ts,
+        nodeResolve()
+    ]
+  },
 
 ];

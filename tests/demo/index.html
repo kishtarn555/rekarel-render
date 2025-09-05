@@ -13,19 +13,29 @@
     </div>
     <div>
         <textarea name="a" id="world" cols="80" rows="10">
+            
             <ejecucion version="1.1">
                 <condiciones instruccionesMaximasAEjecutar="10000000" longitudStack="65000" memoriaStack="65000" llamadaMaxima="5"/>
                 <mundos>
-                    <mundo nombre="mundo_0" ancho="4" alto="6">
-                        <monton x="2" y="5" zumbadores="2"/>
-                        <monton x="1" y="6" zumbadores="1"/>
-                        <monton x="3" y="6" zumbadores="3"/>
+                    <mundo nombre="mundo_0" ancho="4" alto="3">
+                        <monton x="4" y="1" zumbadores="3"/>
+                        <monton x="1" y="3" zumbadores="1"/>
+                        <monton x="2" y="3" zumbadores="50"/>
+                        <monton x="3" y="3" zumbadores="INFINITO"/>
+                        <posicionDump x="1" y="1"/>
+                        <posicionDump x="3" y="1"/>
+                        <posicionDump x="4" y="1"/>
+                        <posicionDump x="4" y="2"/>
                     </mundo>
                 </mundos>
                 <programas tipoEjecucion="CONTINUA" intruccionesCambioContexto="1" milisegundosParaPasoAutomatico="0">
-                    <programa nombre="p1" ruta="{$2$}" mundoDeEjecucion="mundo_0" xKarel="3" yKarel="3" direccionKarel="NORTE" mochilaKarel="0"/>
+                    <programa nombre="p1" ruta="{$2$}" mundoDeEjecucion="mundo_0" xKarel="2" yKarel="2" direccionKarel="OESTE" mochilaKarel="0">
+                        <despliega tipo="MUNDO"/>
+                    </programa>
                 </programas>
             </ejecucion>
+
+
             
         </textarea>
     </div>
