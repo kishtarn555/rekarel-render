@@ -431,10 +431,10 @@ export class RasterRenderer extends BaseRenderer<RasterRenderOptions, CanvasRend
             colorDumpCells,
             DrawGrid,
             DrawKarel,
-            DrawWalls,
-            DrawBeepers,
             DrawVerticalGutter,
             DrawHorizontalGutter,
+            DrawWalls,
+            DrawBeepers,
         ];
         this.preLayer = (_, target) => {
             target.save();
